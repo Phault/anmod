@@ -7,7 +7,10 @@ import {
 } from 'mobx-state-tree';
 import { Movie } from './Movie';
 import { Show } from './Show';
-import { OmbiCoreModelsSearchSearchMovieViewModel } from '../../ombi-api/model';
+import {
+  OmbiCoreModelsSearchSearchMovieViewModel,
+  OmbiStoreEntitiesRequestsMovieRequests
+} from '../../ombi-api/model';
 import { TheMovieDbId } from '../../types/ids';
 import { api } from '../../api';
 import { ThenArg } from '../../types/ThenArg';
@@ -15,7 +18,7 @@ import { shim, action, mst } from 'classy-mst';
 import { RootStore } from '../RootStore';
 import { merge } from '../../utils/merge';
 
-function movieSnapshotFromServer(
+function movieSnapshotFromServerMovie(
   serverMovie: OmbiCoreModelsSearchSearchMovieViewModel
 ) {
   const snapshot: SnapshotIn<typeof Movie> = {
@@ -32,6 +35,27 @@ function movieSnapshotFromServer(
     _request: serverMovie.requested ? serverMovie.requestId : undefined,
     plexUrl: serverMovie.plexUrl,
     embyUrl: serverMovie.embyUrl,
+    lastUpdated: new Date()
+  };
+
+  return snapshot;
+}
+
+function movieSnapshotFromServerMovieRequest(
+  serverRequest: OmbiStoreEntitiesRequestsMovieRequests
+) {
+  const snapshot: SnapshotIn<typeof Movie> = {
+    id: serverRequest.theMovieDbId,
+    available: serverRequest.available,
+    background: serverRequest.background,
+    poster: serverRequest.posterPath,
+    imdbId: serverRequest.imdbId || undefined,
+    overview: serverRequest.overview,
+    title: serverRequest.title,
+    releaseDate: new Date(
+      serverRequest.releaseDate || serverRequest.digitalReleaseDate!
+    ),
+    _request: serverRequest.id,
     lastUpdated: new Date()
   };
 
@@ -58,7 +82,7 @@ class MediaStoreCode extends shim(MediaStoreData) {
   updateMovieFromServer(
     serverMovie: OmbiCoreModelsSearchSearchMovieViewModel
   ): Instance<typeof Movie> {
-    const movieSnapshot = movieSnapshotFromServer(serverMovie);
+    const movieSnapshot = movieSnapshotFromServerMovie(serverMovie);
 
     if (movieSnapshot._request) {
       const requestStore = getParentOfType(this, RootStore).requests;
@@ -67,6 +91,14 @@ class MediaStoreCode extends shim(MediaStoreData) {
       ).id;
     }
 
+    return this.updateMovie(movieSnapshot);
+  }
+
+  @action
+  updateMovieFromServerRequest(
+    serverRequest: OmbiStoreEntitiesRequestsMovieRequests
+  ): Instance<typeof Movie> {
+    const movieSnapshot = movieSnapshotFromServerMovieRequest(serverRequest);
     return this.updateMovie(movieSnapshot);
   }
 

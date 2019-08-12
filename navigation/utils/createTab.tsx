@@ -11,6 +11,12 @@ import Constants from 'expo-constants';
 import { ThemedAppbarBackAction } from '../../components/drawer/ThemedAppbarBackAction';
 import { ThemedAppbarAction } from '../../components/drawer/ThemedAppbarAction';
 
+export const defaultHeaderStyle = params => ({
+  backgroundColor: params.screenProps.theme.colors.surface,
+  height: Constants.statusBarHeight + Header.HEIGHT,
+  paddingTop: Constants.statusBarHeight
+});
+
 export function createTab(
   routeConfigMap: NavigationRouteConfigMap,
   options: StackNavigatorConfig
@@ -28,11 +34,7 @@ export function createTab(
             onPress={() => params.navigation.toggleDrawer()}
           />
         ),
-      headerStyle: {
-        backgroundColor: params.screenProps.theme.colors.surface,
-        height: Constants.statusBarHeight + Header.HEIGHT,
-        paddingTop: Constants.statusBarHeight
-      },
+      headerStyle: defaultHeaderStyle(params),
       headerTintColor: params.screenProps.theme.colors.text,
       ...(typeof options.defaultNavigationOptions === 'function'
         ? options.defaultNavigationOptions(params)

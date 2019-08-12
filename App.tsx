@@ -33,12 +33,15 @@ import { useScreens } from 'react-native-screens';
 
 StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
 
-YellowBox.ignoreWarnings(['Require cycle:']);
+YellowBox.ignoreWarnings([
+  'Require cycle:',
+  'Warning: ViewPagerAndroid has been extracted'
+]);
 
 useScreens();
 
 configure({
-  enforceActions: 'always'
+  enforceActions: 'observed'
 });
 
 const store = RootStore.create({});
@@ -59,8 +62,8 @@ const PersistGate = ({ children }) => {
   useEffect(() => {
     persist('data', store, {
       storage: AsyncStorage,
-      // whitelist: ['auth']
-      blacklist: ['search']
+      whitelist: ['auth']
+      // blacklist: ['search']
     }).then(() => {
       setLoaded(true);
     });

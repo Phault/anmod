@@ -73,7 +73,8 @@ const Header = ({ animatedValue, height }) => {
 const Background = styled(View)`
   background: ${props => props.theme.colors.background};
   flex-grow: 1;
-  padding: 0 12px;
+  padding: 12px;
+  padding-top: 0;
 `;
 
 const ThemedParallaxScroll = ({ style = undefined, ...props }) => {
@@ -88,9 +89,11 @@ const ThemedParallaxScroll = ({ style = undefined, ...props }) => {
       width={observableDimensions.width}
       height={observableDimensions.height}
       contentContainerStyle={{
-        paddingBottom: 10,
         paddingHorizontal:
-          observableDimensions.orientation === Orientation.landscape ? 12 : 0
+          observableDimensions.orientation === Orientation.landscape
+            ? observableDimensions.width * 0.05
+            : 0,
+        paddingBottom: 12
       }}
       {...props}
     />
@@ -246,7 +249,11 @@ export const MovieDetailsScreen = ({ navigation }) => {
         <Background>
           {movie ? (
             <>
-              <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginBottom: 12
+                }}>
                 <Poster
                   movie={movie}
                   style={{

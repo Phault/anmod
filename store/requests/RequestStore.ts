@@ -5,7 +5,6 @@ import {
   flow,
   getParentOfType
 } from 'mobx-state-tree';
-import { values, runInAction } from 'mobx';
 import { RequestStatus } from './RequestStatus';
 import { ShowRequest } from './shows/ShowRequest';
 import { MovieRequest } from './movies/MovieRequest';
@@ -19,6 +18,7 @@ import { api } from '../../api';
 import { Movie } from '../media/Movie';
 import { merge } from '../../utils/merge';
 import { RootStore } from '../RootStore';
+import { RequestFilters } from '../../types/RequestFilters';
 
 function movieRequestSnapshotFromServerRequest(
   serverRequest: OmbiStoreEntitiesRequestsMovieRequests
@@ -63,10 +63,8 @@ const RequestStoreData = types.model({
 });
 
 class RequestStoreCode extends shim(RequestStoreData) {
-  moviesWithStatus(status: RequestStatus) {
-    return values(this.movies).filter(m => m.status === status) as Instance<
-      typeof MovieRequest
-    >[];
+  moviesWithStatus(status: RequestStatus): Instance<typeof MovieRequest>[] {
+    return Object.values(this.movies).filter(m => m.status === status);
   }
 
   @action
@@ -86,6 +84,9 @@ class RequestStoreCode extends shim(RequestStoreData) {
       const rootStore = getParentOfType(this, RootStore);
       rootStore.users.updateUserFromOmbiUser(serverRequest.requestedUser);
     }
+
+    const mediaStore = getParentOfType(this, RootStore).media;
+    mediaStore.updateMovieFromServerRequest(serverRequest);
 
     const snapshot = movieRequestSnapshotFromServerRequest(serverRequest);
     return this.updateMovieRequest(snapshot);
@@ -149,6 +150,28 @@ class RequestStoreCode extends shim(RequestStoreData) {
         throw new Error(`No requests matching title ${movieTitle}`);
 
       return self.movies.get(rightRequest.id.toString());
+    })();
+  }
+
+  @action
+  fetchMovieRequests(filter: RequestFilters) {
+    const self = this;
+
+    return flow(function*() {
+      const { count, position, order, status, availability } = filter;
+      const {
+        data
+      } = (yield api.requests.requestMovieByCountByPositionByOrderTypeByStatusTypeByAvailabilityTypeGet(
+        count,
+        position,
+        order,
+        status,
+        availability
+      )) as ThenArg<
+        typeof api.requests.requestMovieByCountByPositionByOrderTypeByStatusTypeByAvailabilityTypeGet
+      >;
+
+      return data.collection.map(self.updateMovieRequestWithServerRequest);
     })();
   }
 }

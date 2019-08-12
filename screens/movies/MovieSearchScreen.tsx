@@ -6,7 +6,7 @@ import {
   FlatList
 } from 'react-navigation';
 import { Text, Appbar, Searchbar, Surface } from 'react-native-paper';
-import { MovieView } from '../../components/MovieList';
+import { MovieView } from '../../components/MovieView';
 import { useStores } from '../../store/StoreContext';
 import { useObserver, observer } from 'mobx-react-lite';
 import debounce from 'lodash.debounce';
@@ -58,7 +58,11 @@ export const SearchResults: FC<SearchResultsProps> = observer(
       data={results}
       keyExtractor={item => item.id.toString()}
       renderItem={({ item }) => (
-        <MovieView movie={item} onPress={() => onPress(item)} />
+        <MovieView
+          movie={item}
+          onPress={() => onPress(item)}
+          style={{ margin: 5, borderRadius: 3 }}
+        />
       )}
     />
   )
