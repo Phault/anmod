@@ -2,11 +2,11 @@ import React, { useEffect, FC, memo, useState, useCallback } from 'react';
 import { Text } from 'react-native-paper';
 import { MovieLists, api } from '../../api';
 import { NavigationInjectedProps } from 'react-navigation';
-import { SectionProps, Section } from '../../components/Section';
+import { SectionProps, Section } from '../../components/section/Section';
 import { useStores } from '../../store/StoreContext';
 import { useObserver } from 'mobx-react-lite';
-import { SectionMovieItem } from '../../components/SectionMovieItem';
-import { LoadingSectionItem } from '../../components/LoadingSectionItem';
+import { SectionMovieItem } from '../../components/section/SectionMovieItem';
+import { LoadingSectionItem } from '../../components/section/LoadingSectionItem';
 
 const OneDay = 1000 * 60 * 60 * 24;
 

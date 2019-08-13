@@ -25,14 +25,14 @@ import {
   Paragraph,
   Text
 } from 'react-native-paper';
-import { Section } from '../../components/Section';
+import { Section } from '../../components/section/Section';
 import styled from 'styled-components/native';
 import { ThemeContext } from 'styled-components';
 import { useStores } from '../../store/StoreContext';
 import { isValidReference, Instance } from 'mobx-state-tree';
 import { RequestStatus } from '../../store/requests/RequestStatus';
 import { useObserver, observer, Observer } from 'mobx-react-lite';
-import { SectionMovieItem } from '../../components/SectionMovieItem';
+import { SectionMovieItem } from '../../components/section/SectionMovieItem';
 import { Movie } from '../../store/media/Movie';
 import { Poster } from '../../components/Poster';
 import {

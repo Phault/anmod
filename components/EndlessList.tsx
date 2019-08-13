@@ -3,13 +3,15 @@ import {
   ListRenderItem,
   StyleProp,
   ViewStyle,
-  View,
-  StyleSheet
+  StyleSheet,
+  ToastAndroid
 } from 'react-native';
 import { FlatList } from 'react-navigation';
 import { useLocalStore, useObserver, observer } from 'mobx-react-lite';
 import { runInAction, action } from 'mobx';
 import { ActivityIndicator } from 'react-native-paper';
+import { throttle } from 'lodash';
+import { ListEmptyComponent as DefaultListEmptyComponent } from './ListEmptyComponent';
 
 export interface EndlessListProps<T> {
   fetchItems: (count: number, offset: number) => Promise<T[]>;
@@ -26,7 +28,7 @@ export function EndlessList<T = any>({
   fetchItems,
   itemsPerBatch = 10,
   renderItem,
-  ListEmptyComponent,
+  ListEmptyComponent = DefaultListEmptyComponent,
   style,
   contentContainerStyle
 }: EndlessListProps<T>) {
@@ -47,18 +49,25 @@ export function EndlessList<T = any>({
     }),
 
     loadMore: action(async () => {
+      console.log('called');
       if (state.isLoadingMore) return;
 
       state.isLoadingMore = true;
 
-      const items = await fetchItems(itemsPerBatch, state.items.length);
-
-      runInAction(() => {
-        state.items = state.items.concat(
-          items.filter(i => !state.items.includes(i))
-        );
-        state.isLoadingMore = false;
-      });
+      try {
+        const items = await fetchItems(itemsPerBatch, state.items.length);
+        runInAction(() => {
+          state.items = state.items.concat(
+            items.filter(i => !state.items.includes(i))
+          );
+        });
+      } catch (e) {
+        ToastAndroid.show(e.message, ToastAndroid.SHORT);
+      } finally {
+        runInAction(() => {
+          state.isLoadingMore = false;
+        });
+      }
     })
   }));
 
@@ -70,6 +79,10 @@ export function EndlessList<T = any>({
     state
   ]);
 
+  const loadMore = useCallback(throttle(state.loadMore, 2000), [
+    state.loadMore
+  ]);
+
   return useObserver(() => (
     <FlatList
       keyExtractor={keyExtractor}
@@ -79,7 +92,7 @@ export function EndlessList<T = any>({
       ListFooterComponent={listFooter}
       style={style}
       contentContainerStyle={contentContainerStyle}
-      onEndReached={state.loadMore}
+      onEndReached={loadMore}
       onEndReachedThreshold={1}
       refreshing={state.isRefreshing}
       onRefresh={state.refresh}

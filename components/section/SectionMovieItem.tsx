@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Instance } from 'mobx-state-tree';
-import { Movie } from '../store/media/Movie';
+import { Movie } from '../../store/media/Movie';
 import { SectionItem } from './SectionItem';
 import { withNavigation } from 'react-navigation';
 

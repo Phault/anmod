@@ -1,15 +1,21 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Paragraph } from 'react-native-paper';
+import { View, StyleSheet, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-export const InfoLine = ({ icon, children }) => (
+export const InfoLine = ({ icon, children, style = undefined }) => (
   <View style={styles.container}>
-    <MaterialIcons name={icon} size={14} color="white" alpha={0.87} />
-    <Paragraph> {children}</Paragraph>
+    <MaterialIcons name={icon} style={[styles.text, style]} />
+    <Text style={[styles.text, style]}> {children}</Text>
   </View>
 );
 
 const styles = StyleSheet.create({
-  container: { flexDirection: 'row', alignItems: 'center' }
+  container: { flexDirection: 'row', alignItems: 'center' },
+  text: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginVertical: 2,
+    letterSpacing: 0.25,
+    color: 'rgba(255, 255, 255, 0.87)'
+  }
 });

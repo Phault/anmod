@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { TouchableRipple, Text, Surface, Caption } from 'react-native-paper';
 import { ThemeContext } from 'styled-components';
 import styled from 'styled-components/native';
-import { ScaledImage } from './ScaledImage';
+import { ScaledImage } from '../ScaledImage';
 
 const SectionItemText = styled(Text)`
   font-size: 16px;

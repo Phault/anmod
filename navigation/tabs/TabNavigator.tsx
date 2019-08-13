@@ -6,6 +6,7 @@ import {
 import { MoviesTab } from './MoviesTab';
 import { ThemedTabBar } from '../../components/ThemedTabBar';
 import { RequestsTab } from './RequestsTab';
+import { IssuesTab } from './IssuesTab';
 
 export default createBottomTabNavigator(
   {
@@ -16,6 +17,10 @@ export default createBottomTabNavigator(
     RequestsTab: {
       screen: RequestsTab,
       path: 'requests'
+    },
+    IssuesTab: {
+      screen: IssuesTab,
+      path: 'issues'
     }
   },
   {

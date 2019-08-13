@@ -11,8 +11,8 @@ const ShowData = BaseModel.props({
   overview: types.string,
   seasons: types.array(ShowSeason),
   imdbId: types.string,
-  posterPath: types.string,
-  background: types.string,
+  poster: types.maybeNull(types.string),
+  background: types.maybeNull(types.string),
   request: types.maybeNull(
     types.reference(types.late((): IAnyModelType => ShowRequest))
   )

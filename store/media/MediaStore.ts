@@ -11,12 +11,13 @@ import {
   OmbiCoreModelsSearchSearchMovieViewModel,
   OmbiStoreEntitiesRequestsMovieRequests
 } from '../../ombi-api/model';
-import { TheMovieDbId } from '../../types/ids';
+import { TheMovieDbId, TheTvDbId } from '../../types/ids';
 import { api } from '../../api';
 import { ThenArg } from '../../types/ThenArg';
 import { shim, action, mst } from 'classy-mst';
 import { RootStore } from '../RootStore';
 import { merge } from '../../utils/merge';
+import { RequestType } from '../../types/RequestType';
 
 function movieSnapshotFromServerMovie(
   serverMovie: OmbiCoreModelsSearchSearchMovieViewModel
@@ -115,6 +116,25 @@ class MediaStoreCode extends shim(MediaStoreData) {
         data
       ) as ReturnType<typeof self.updateMovieFromServer>;
     })();
+  }
+
+  @action
+  fetch(id: TheMovieDbId | TheTvDbId, type: RequestType) {
+    switch (type) {
+      case RequestType.Movie:
+        return this.fetchMovie(id);
+    }
+
+    throw new Error('Unknown type');
+  }
+
+  get(id: TheMovieDbId | TheTvDbId, type: RequestType) {
+    switch (type) {
+      case RequestType.Movie:
+        return this.movies.get(id.toString());
+    }
+
+    throw new Error('Unknown type');
   }
 }
 

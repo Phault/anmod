@@ -1,11 +1,11 @@
 import { RequestSortOrder } from './OrderType';
 import { AvailabilityFilter } from './AvailabilityFilter';
-import { StatusFilter } from './StatusFilter';
+import { RequestStatusFilter } from './RequestStatusFilter';
 
 export interface RequestFilters {
   count: number;
   position: number;
   order: RequestSortOrder;
-  status: StatusFilter;
+  status: RequestStatusFilter;
   availability: AvailabilityFilter;
 }

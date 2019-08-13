@@ -17,7 +17,7 @@ export const User = BaseModel.named('User')
     id: types.identifier,
     username: types.string,
     alias: types.maybeNull(types.string),
-    email: types.string,
+    email: types.maybeNull(types.string),
     claims: types.map(types.boolean),
     movieRequestQuota: types.maybeNull(RequestQuota),
     episodeRequestQuota: types.maybeNull(RequestQuota),

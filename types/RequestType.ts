@@ -1,5 +1,5 @@
 export enum RequestType {
-  tvShow,
-  movie,
-  album
+  TvShow,
+  Movie,
+  Album
 }

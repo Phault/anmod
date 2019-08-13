@@ -1,7 +1,7 @@
 import React from 'react';
 import { AvailabilityFilter } from '../../types/AvailabilityFilter';
 import { RequestSortOrder } from '../../types/OrderType';
-import { StatusFilter } from '../../types/StatusFilter';
+import { RequestStatusFilter } from '../../types/RequestStatusFilter';
 import { ManageRequestsFab } from './ManageRequestsFab';
 import { RequestList } from '../../components/requests/RequestList';
 
@@ -9,7 +9,7 @@ export const PendingRequestsScreen = () => {
   return (
     <>
       <RequestList
-        status={StatusFilter.pending}
+        status={RequestStatusFilter.pending}
         order={RequestSortOrder.requestedDateDesc}
         availability={AvailabilityFilter.none}
       />

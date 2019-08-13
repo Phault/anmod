@@ -1,12 +1,10 @@
 import React, { useCallback, FC } from 'react';
 import styled from 'styled-components/native';
 import { useStores } from '../../store/StoreContext';
-import { AvailabilityFilter } from '../../types/AvailabilityFilter';
-import { RequestSortOrder } from '../../types/OrderType';
-import { RequestStatusFilter } from '../../types/RequestStatusFilter';
-import { RequestListItem } from './RequestListItem';
+import { IssueListItem } from './IssueListItem';
 import { EndlessList } from '../EndlessList';
 import { StyleSheet } from 'react-native';
+import { IssueStatus } from '../../types/IssueStatus';
 
 const StyledEndlessList = styled(EndlessList).attrs({
   contentContainerStyle: { padding: 10, flexGrow: 1 }
@@ -15,34 +13,26 @@ const StyledEndlessList = styled(EndlessList).attrs({
   flex-grow: 1;
 `;
 
-export interface RequestListProps {
-  status: RequestStatusFilter;
-  order: RequestSortOrder;
-  availability: AvailabilityFilter;
+export interface IssueListProps {
+  status: IssueStatus;
 }
 
 const itemRenderer = ({ item }) => (
-  <RequestListItem request={item} style={styles.item} />
+  <IssueListItem issue={item} style={styles.item} />
 );
 
 const keyExtractor = item => item.id.toString();
 
-export const RequestList: FC<RequestListProps> = ({
-  status,
-  order,
-  availability
-}) => {
-  const { requests } = useStores();
+export const IssueList: FC<IssueListProps> = ({ status }) => {
+  const { issues } = useStores();
   const fetchItems = useCallback(
     (count, position) =>
-      requests.fetchMovieRequests({
+      issues.fetchIssues({
         count,
         position,
-        status,
-        order,
-        availability
+        status
       }),
-    [requests, status, order, availability]
+    [issues, status]
   );
 
   return (
