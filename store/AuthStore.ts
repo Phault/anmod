@@ -1,7 +1,7 @@
 import { types, flow } from 'mobx-state-tree';
 import { User } from './users/User';
 import { shim, action, mst } from 'classy-mst';
-import { signIn, signInPlex } from '../AuthHelpers';
+import { signIn, signInPlex } from '../utils/AuthHelpers';
 
 const AuthStoreData = types.model('AuthStore', {
   serverUrl: types.maybeNull(types.string),

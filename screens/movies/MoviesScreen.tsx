@@ -1,14 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { ScrollView, RefreshControl } from 'react-native';
-import { FAB, Portal } from 'react-native-paper';
 import styled from 'styled-components/native';
-import { NavigationEvents } from 'react-navigation';
 import { MovieListSection } from './MovieListSection';
 import { StyleSheet } from 'react-native';
 import { MovieLists } from '../../api';
 import { useStores } from '../../store/StoreContext';
+import { NavigationAwareFAB } from '../../components/NavigationAwareFAB';
 
-const StyledFab = styled(FAB).attrs(props => ({
+const StyledFab = styled(NavigationAwareFAB).attrs(props => ({
   color: props.theme.colors.text
 }))`
   position: absolute;
@@ -38,11 +37,9 @@ const Lists: { [type in MovieLists]?: string } = {
 };
 
 export const MoviesScreen = ({ navigation }) => {
-  const [active, setActive] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const onSearch = useCallback(() => active && navigation.navigate('Search'), [
-    active,
+  const onSearch = useCallback(() => navigation.navigate('Search'), [
     navigation
   ]);
 
@@ -78,18 +75,7 @@ export const MoviesScreen = ({ navigation }) => {
           );
         })}
       </StyledScrollView>
-      <NavigationEvents
-        onDidFocus={() => setActive(true)}
-        onWillBlur={() => setActive(false)}
-      />
-      <Portal>
-        <StyledFab
-          icon="search"
-          onPress={onSearch}
-          accessibilityLabel="Search"
-          visible={active}
-        />
-      </Portal>
+      <StyledFab icon="search" onPress={onSearch} accessibilityLabel="Search" />
     </>
   );
 };

@@ -7,7 +7,7 @@ import {
 } from 'mobx-state-tree';
 import { User } from '../../users/User';
 import { RequestStatusType, RequestStatus } from '../RequestStatus';
-import { Movie } from '../../media/Movie';
+import { Movie } from '../../media/movies/Movie';
 import { shim, mst } from 'classy-mst';
 import { RootStore } from '../../RootStore';
 import { BaseModel } from '../../BaseModel';

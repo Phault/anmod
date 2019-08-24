@@ -1,9 +1,8 @@
 import React, { useState, useCallback, FC, useMemo } from 'react';
-import { Portal, FAB } from 'react-native-paper';
-import { NavigationEvents } from 'react-navigation';
 import styled from 'styled-components/native';
+import { NavigationAwareFABGroup } from '../../components/NavigationAwareFABGroup';
 
-export const StyledFabGroup = styled(FAB.Group).attrs(props => ({
+export const StyledFabGroup = styled(NavigationAwareFABGroup).attrs(props => ({
   color: props.theme.colors.text,
   fabStyle: {
     backgroundColor: props.theme.colors.primary
@@ -21,7 +20,6 @@ export const ManageRequestsFab: FC<ManageRequestsFabProps> = ({
   onApproveAll,
   onRejectAll
 }) => {
-  const [active, setActive] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
 
   const actions = useMemo(
@@ -45,24 +43,12 @@ export const ManageRequestsFab: FC<ManageRequestsFabProps> = ({
   ]);
 
   return (
-    <>
-      <NavigationEvents
-        onDidFocus={() => setActive(true)}
-        onWillBlur={() => {
-          setActive(false);
-          setFabOpen(false);
-        }}
-      />
-      <Portal>
-        <StyledFabGroup
-          open={active && fabOpen}
-          icon={fabOpen ? 'close' : 'menu'}
-          actions={actions}
-          onStateChange={onStateChange}
-          accessibilityLabel="Manage all"
-          visible={active}
-        />
-      </Portal>
-    </>
+    <StyledFabGroup
+      open={fabOpen}
+      icon={fabOpen ? 'close' : 'menu'}
+      actions={actions}
+      onStateChange={onStateChange}
+      accessibilityLabel="Manage all"
+    />
   );
 };

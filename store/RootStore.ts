@@ -5,7 +5,6 @@ import { IssueStore } from './issues/IssueStore';
 import { UserStore } from './users/UserStore';
 import { AuthStore } from './AuthStore';
 import { ListStore } from './ListStore';
-import { SearchStore } from './SearchStore';
 
 export const RootStore = types.model('RootStore', {
   auth: types.optional(AuthStore, {}),
@@ -13,6 +12,5 @@ export const RootStore = types.model('RootStore', {
   requests: types.optional(RequestStore, {}),
   issues: types.optional(IssueStore, {}),
   users: types.optional(UserStore, {}),
-  lists: types.optional(ListStore, {}),
-  search: types.optional(SearchStore, {})
+  lists: types.optional(ListStore, {})
 });

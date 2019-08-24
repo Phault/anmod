@@ -2,7 +2,7 @@ import React from 'react';
 import { Headline } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import styled from 'styled-components/native';
-import { Theme } from '../App';
+import { Theme } from '../Theme';
 
 const Divider = styled.View`
   background: ${({ theme }) => (theme as Theme).colors.text};

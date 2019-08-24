@@ -49,7 +49,6 @@ export function EndlessList<T = any>({
     }),
 
     loadMore: action(async () => {
-      console.log('called');
       if (state.isLoadingMore) return;
 
       state.isLoadingMore = true;

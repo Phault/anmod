@@ -5,7 +5,7 @@ import { NavigationInjectedProps } from 'react-navigation';
 import { SectionProps, Section } from '../../components/section/Section';
 import { useStores } from '../../store/StoreContext';
 import { useObserver } from 'mobx-react-lite';
-import { SectionMovieItem } from '../../components/section/SectionMovieItem';
+import { SectionMediaItem } from '../../components/section/SectionMediaItem';
 import { LoadingSectionItem } from '../../components/section/LoadingSectionItem';
 
 const OneDay = 1000 * 60 * 60 * 24;
@@ -54,7 +54,7 @@ export const MovieListSection: FC<MovieListSectionProps> = memo(
         items = <LoadingSectionItem />;
       } else {
         items = movieList.items.map(movie => (
-          <SectionMovieItem key={movie.id} movie={movie} />
+          <SectionMediaItem key={movie.id} media={movie} />
         ));
       }
 

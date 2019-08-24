@@ -4,14 +4,15 @@ import { Surface } from 'react-native-paper';
 import { ScaledImage } from './ScaledImage';
 import { Instance } from 'mobx-state-tree';
 import { Observer } from 'mobx-react-lite';
-import { Movie } from '../store/media/Movie';
+import { AnyMedia } from '../store/media/AnyMedia';
+import { PosterSizes } from '../types/ImageSizes';
 
 export interface PosterProps extends ViewProps {
-  movie: Instance<typeof Movie>;
+  media: Instance<typeof AnyMedia>;
   height: number;
 }
 
-export const Poster: FC<PosterProps> = ({ movie, height, ...rest }) => (
+export const Poster: FC<PosterProps> = ({ media, height, ...rest }) => (
   <View {...rest}>
     <Surface
       style={{
@@ -21,7 +22,7 @@ export const Poster: FC<PosterProps> = ({ movie, height, ...rest }) => (
         {() => (
           <ScaledImage
             source={{
-              uri: 'https://image.tmdb.org/t/p/w154' + movie.poster
+              uri: media.poster(PosterSizes.w154)
             }}
             height={height}
           />

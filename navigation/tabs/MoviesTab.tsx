@@ -11,7 +11,7 @@ export const MoviesTab = createTab(
       screen: MoviesScreen,
       path: 'main'
     },
-    Details: { screen: MovieDetailsScreen, path: 'details/:movieId' },
+    Details: { screen: MovieDetailsScreen, path: 'details/:id' },
     Search: { screen: MovieSearchScreen, path: 'search/:term' }
   },
   {

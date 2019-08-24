@@ -8,28 +8,17 @@ import {
   YellowBox,
   Linking
 } from 'react-native';
-import styled from 'styled-components/native';
-import {
-  ThemeProvider as StyledThemeProvider,
-  DefaultTheme
-} from 'styled-components';
-import {
-  Provider as PaperThemeProvider,
-  DefaultTheme as PaperDefaultTheme,
-  Theme as PaperTheme
-} from 'react-native-paper';
-import Axios from 'axios';
-import { BASE_PATH } from './ombi-api/base';
 import { RootStore } from './store/RootStore';
 import { persist } from 'mst-persist';
 import { StoreContext, useStores } from './store/StoreContext';
-import { configure, autorun } from 'mobx';
+import { configure as configureMobx, autorun } from 'mobx';
 import { StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import AsyncStorage from '@react-native-community/async-storage';
-import NavigationService from './NavigationService';
 import initOneSignal from './initOneSignal';
 import { useScreens } from 'react-native-screens';
+import { ThemeProvider, defaultTheme } from './Theme';
+import { initAxios } from './initAxios';
 
 StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
 
@@ -40,12 +29,13 @@ YellowBox.ignoreWarnings([
 
 useScreens();
 
-configure({
+configureMobx({
   enforceActions: 'observed'
 });
 
-const store = RootStore.create({});
+export const store = RootStore.create({});
 initOneSignal(store);
+initAxios(store);
 
 autorun(() => {
   if (store.auth.isAuthenticated) {
@@ -69,48 +59,8 @@ const PersistGate = ({ children }) => {
     });
   }, []);
 
-  return <>{isLoaded ? children : null}</>;
+  return isLoaded ? children : null;
 };
-
-Axios.interceptors.request.use(config => {
-  const { serverUrl, accessToken } = store.auth;
-
-  config.baseURL = serverUrl || undefined;
-  config.url = config.url && config.url.replace(BASE_PATH, '');
-
-  if (accessToken) config.headers['UserAccessToken'] = accessToken;
-
-  return config;
-});
-
-export interface Theme extends DefaultTheme, PaperTheme {}
-
-const defaultTheme: Theme = {
-  ...PaperDefaultTheme,
-  dark: true,
-  roundness: 4,
-  colors: {
-    primary: '#DF691A',
-    accent: '#5BC0DE',
-    background: '#263238',
-    surface: '#37474F',
-    error: '#D9534F',
-    text: '#ffffff',
-    disabled: '#ffffff42',
-    placeholder: '#ffffff8A',
-    backdrop: '#00000080'
-  }
-};
-
-const ThemeProvider = ({ theme, children }) => (
-  <StyledThemeProvider theme={theme}>
-    <PaperThemeProvider theme={theme}>{children}</PaperThemeProvider>
-  </StyledThemeProvider>
-);
-
-const FillView = styled(View)`
-  flex: 1;
-`;
 
 // const persistenceKey = 'navigation';
 
@@ -155,7 +105,11 @@ export default function App() {
     <StoreContext.Provider value={store}>
       <PersistGate>
         <ThemeProvider theme={defaultTheme}>
-          <FillView style={{ backgroundColor: defaultTheme.colors.background }}>
+          <View
+            style={[
+              styles.fill,
+              { backgroundColor: defaultTheme.colors.background }
+            ]}>
             <StatusBar
               backgroundColor="transparent"
               barStyle={defaultTheme.dark ? 'light-content' : 'dark-content'}
@@ -163,19 +117,24 @@ export default function App() {
             />
             <KeyboardAvoidingView
               behavior="padding"
-              style={{ flex: 1 }}
+              style={styles.fill}
               enabled={Platform.OS === 'ios'}>
               <AppNavigator
-                ref={ref => NavigationService.setTopLevelNavigator(ref)}
                 screenProps={{ theme: defaultTheme }}
                 uriPrefix={uriPrefix}
                 // persistNavigationState={persistNavigationState}
                 // loadNavigationState={loadNavigationState}
               />
             </KeyboardAvoidingView>
-          </FillView>
+          </View>
         </ThemeProvider>
       </PersistGate>
     </StoreContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  fill: {
+    flex: 1
+  }
+});

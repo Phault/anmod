@@ -1,137 +1,57 @@
-import {
-  types,
-  SnapshotIn,
-  getParentOfType,
-  flow,
-  Instance
-} from 'mobx-state-tree';
-import { Movie } from './Movie';
-import { Show } from './Show';
-import {
-  OmbiCoreModelsSearchSearchMovieViewModel,
-  OmbiStoreEntitiesRequestsMovieRequests
-} from '../../ombi-api/model';
+import { types, Instance, cast } from 'mobx-state-tree';
 import { TheMovieDbId, TheTvDbId } from '../../types/ids';
-import { api } from '../../api';
-import { ThenArg } from '../../types/ThenArg';
 import { shim, action, mst } from 'classy-mst';
-import { RootStore } from '../RootStore';
-import { merge } from '../../utils/merge';
 import { RequestType } from '../../types/RequestType';
-
-function movieSnapshotFromServerMovie(
-  serverMovie: OmbiCoreModelsSearchSearchMovieViewModel
-) {
-  const snapshot: SnapshotIn<typeof Movie> = {
-    id: serverMovie.id,
-    available: serverMovie.available,
-    background: serverMovie.backdropPath,
-    poster: serverMovie.posterPath,
-    imdbId: serverMovie.imdbId || undefined,
-    overview: serverMovie.overview,
-    title: serverMovie.title,
-    releaseDate: new Date(
-      serverMovie.releaseDate || serverMovie.digitalReleaseDate!
-    ),
-    _request: serverMovie.requested ? serverMovie.requestId : undefined,
-    plexUrl: serverMovie.plexUrl,
-    embyUrl: serverMovie.embyUrl,
-    lastUpdated: new Date()
-  };
-
-  return snapshot;
-}
-
-function movieSnapshotFromServerMovieRequest(
-  serverRequest: OmbiStoreEntitiesRequestsMovieRequests
-) {
-  const snapshot: SnapshotIn<typeof Movie> = {
-    id: serverRequest.theMovieDbId,
-    available: serverRequest.available,
-    background: serverRequest.background,
-    poster: serverRequest.posterPath,
-    imdbId: serverRequest.imdbId || undefined,
-    overview: serverRequest.overview,
-    title: serverRequest.title,
-    releaseDate: new Date(
-      serverRequest.releaseDate || serverRequest.digitalReleaseDate!
-    ),
-    _request: serverRequest.id,
-    lastUpdated: new Date()
-  };
-
-  return snapshot;
-}
+import { AnyMedia } from './AnyMedia';
+import { ShowStore } from './shows/ShowStore';
+import { MovieStore } from './movies/MovieStore';
+import { Movie } from './movies/Movie';
+import { Show } from './shows/Show';
 
 const MediaStoreData = types.model({
-  movies: types.map(Movie),
-  shows: types.map(Show)
+  movies: types.optional(MovieStore, {}),
+  shows: types.optional(ShowStore, {})
 });
 
+type MediaTypeReturnType = {
+  [RequestType.Movie]: typeof Movie;
+  [RequestType.TvShow]: typeof Show;
+  [RequestType.Album]: never;
+};
+
 class MediaStoreCode extends shim(MediaStoreData) {
+  fetch<T extends RequestType>(
+    id: TheMovieDbId | TheTvDbId,
+    type: T
+  ): Promise<Instance<MediaTypeReturnType[T]>>;
   @action
-  updateMovie(
-    patch: OmbiCoreModelsSearchSearchMovieViewModel
-  ): Instance<typeof Movie> {
-    const existingMovie = this.movies.get(patch.id.toString());
-    if (existingMovie) merge(existingMovie, patch);
-
-    return existingMovie || this.movies.put(patch);
-  }
-
-  @action
-  updateMovieFromServer(
-    serverMovie: OmbiCoreModelsSearchSearchMovieViewModel
-  ): Instance<typeof Movie> {
-    const movieSnapshot = movieSnapshotFromServerMovie(serverMovie);
-
-    if (movieSnapshot._request) {
-      const requestStore = getParentOfType(this, RootStore).requests;
-      movieSnapshot._request = requestStore.updateMovieRequestWithServerMovie(
-        serverMovie
-      ).id;
-    }
-
-    return this.updateMovie(movieSnapshot);
-  }
-
-  @action
-  updateMovieFromServerRequest(
-    serverRequest: OmbiStoreEntitiesRequestsMovieRequests
-  ): Instance<typeof Movie> {
-    const movieSnapshot = movieSnapshotFromServerMovieRequest(serverRequest);
-    return this.updateMovie(movieSnapshot);
-  }
-
-  @action
-  fetchMovie(id: TheMovieDbId) {
-    const self = this;
-
-    return flow(function*() {
-      const { data } = (yield api.search.searchMovieInfoByTheMovieDbIdGet(
-        id
-      )) as ThenArg<typeof api.search.searchMovieInfoByTheMovieDbIdGet>;
-
-      return self.updateMovieFromServer(
-        data
-      ) as ReturnType<typeof self.updateMovieFromServer>;
-    })();
-  }
-
-  @action
-  fetch(id: TheMovieDbId | TheTvDbId, type: RequestType) {
+  fetch(
+    id: TheMovieDbId | TheTvDbId,
+    type: RequestType
+  ): Promise<Instance<typeof AnyMedia>> {
     switch (type) {
       case RequestType.Movie:
-        return this.fetchMovie(id);
+        return this.movies.fetch(id);
+      case RequestType.TvShow:
+        return this.shows.fetch(id);
     }
 
     throw new Error('Unknown type');
   }
 
-  get(id: TheMovieDbId | TheTvDbId, type: RequestType) {
+  get<T extends RequestType>(
+    id: TheMovieDbId | TheTvDbId,
+    type: T
+  ): Instance<MediaTypeReturnType[T]>;
+  get(
+    id: TheMovieDbId | TheTvDbId,
+    type: RequestType
+  ): Instance<typeof AnyMedia> {
     switch (type) {
       case RequestType.Movie:
-        return this.movies.get(id.toString());
+        return cast(this.movies.get(id));
+      case RequestType.TvShow:
+        return cast(this.shows.get(id));
     }
 
     throw new Error('Unknown type');

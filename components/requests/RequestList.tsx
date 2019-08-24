@@ -35,7 +35,7 @@ export const RequestList: FC<RequestListProps> = ({
   const { requests } = useStores();
   const fetchItems = useCallback(
     (count, position) =>
-      requests.fetchMovieRequests({
+      requests.movies.fetchRequests({
         count,
         position,
         status,

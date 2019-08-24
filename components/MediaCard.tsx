@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { Instance } from 'mobx-state-tree';
 import FastImage from 'react-native-fast-image';
 import { AnyMedia } from '../store/media/AnyMedia';
+import { PosterSizes, BackdropSizes } from '../types/ImageSizes';
 
 export interface MediaCardProps {
   media: Instance<typeof AnyMedia>;
@@ -19,7 +20,7 @@ export const MediaCard: FC<MediaCardProps> = observer(
     <Surface style={[styles.container, style]}>
       <FastImage
         source={{
-          uri: 'https://image.tmdb.org/t/p/w154' + media.poster
+          uri: media.poster(PosterSizes.w154)
         }}
         style={[styles.poster, posterStyle]}
         resizeMode="cover"
@@ -27,7 +28,7 @@ export const MediaCard: FC<MediaCardProps> = observer(
       <View style={styles.contents}>
         <FastImage
           source={{
-            uri: 'https://image.tmdb.org/t/p/w300' + media.background
+            uri: media.backdrop(BackdropSizes.w300)
           }}
           style={[styles.backgroundImage, backgroundStyle]}
           resizeMode="cover"

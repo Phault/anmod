@@ -5,7 +5,8 @@ import {
   TokenApi,
   SettingsApi,
   IssuesApi,
-  StatusApi
+  StatusApi,
+  ImagesApi
 } from './ombi-api';
 import Axios from 'axios';
 
@@ -96,6 +97,7 @@ export const api = {
   settings: new SettingsApi(),
   issues: new IssuesApi(),
   mobile: new MobileApi(),
+  images: new ImagesApi(),
   lists: {
     getMovieList,
     getShowList

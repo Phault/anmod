@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import Axios from 'axios';
 import Constants from 'expo-constants';
 import * as WebBrowser from 'expo-web-browser';
-import { api } from './api';
+import { api } from '../api';
 
 export interface OmbiToken {
   access_token: string;

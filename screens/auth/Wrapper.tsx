@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import styled from 'styled-components/native';
-import { Theme } from '../../App';
+import { Theme } from '../../Theme';
 
 export const Wrapper = styled.View`
   padding: 20px;

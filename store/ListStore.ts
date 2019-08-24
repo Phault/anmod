@@ -5,8 +5,8 @@ import {
   IAnyType,
   flow
 } from 'mobx-state-tree';
-import { Show } from './media/Show';
-import { Movie } from './media/Movie';
+import { Show } from './media/shows/Show';
+import { Movie } from './media/movies/Movie';
 import { OmbiCoreModelsSearchSearchMovieViewModel } from '../ombi-api/model';
 import { RootStore } from './RootStore';
 import { MovieLists, ShowLists, api } from '../api';
@@ -44,9 +44,9 @@ class ListStoreCode extends shim(ListStoreData) {
     list: MovieLists,
     items: OmbiCoreModelsSearchSearchMovieViewModel[]
   ) {
-    const mediaStore = getParentOfType(this, RootStore).media;
+    const movieStore = getParentOfType(this, RootStore).media.movies;
 
-    items.forEach(mediaStore.updateMovieFromServer);
+    items.forEach(movieStore.updateFromServer);
 
     return this.movies.put({
       id: list,
@@ -63,6 +63,27 @@ class ListStoreCode extends shim(ListStoreData) {
         typeof api.lists.getMovieList
       >;
       return self.updateMovieListFromServer(list, data);
+    })();
+  }
+
+  @action
+  fetchShowList(list: ShowLists) {
+    const self = this;
+
+    return flow(function*() {
+      const { data } = (yield api.lists.getShowList(list)) as ThenArg<
+        typeof api.lists.getShowList
+      >;
+
+      const showStore = getParentOfType(self, RootStore).media.shows;
+
+      const shows = data.map(showStore.updateFromServer);
+      yield Promise.all(shows.map(s => s.fetchImages()));
+
+      return self.shows.put({
+        id: list,
+        items: shows.filter(s => s.posterPath).map(s => s.id)
+      });
     })();
   }
 }

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ThemeContext } from 'styled-components';
 
 export default function TabBarIcon(props) {
